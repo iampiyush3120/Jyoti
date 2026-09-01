@@ -1,311 +1,207 @@
+const express = require("express");
+const mysql = require("mysql2/promise");
+const path = require("path");
+const fs = require("fs");
 require("dotenv").config();
 
-const express = require("express");
-const mysql = require("mysql2");
-const path = require("path");
-
 const app = express();
-const PORT = 3000;
 
-// =========================
-// Middleware
-// =========================
+// ===============================
+// MIDDLEWARE
+// ===============================
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// =========================
-// Frontend
-// =========================
+// ===============================
+// PUBLIC FOLDER
+// ===============================
 
-app.use(express.static(path.join(__dirname, "public")));
+// Check both "public" and "Public"
+let publicFolder = path.join(__dirname, "public");
 
+if (!fs.existsSync(publicFolder)) {
+    publicFolder = path.join(__dirname, "Public");
+}
 
-// =========================
-// MySQL Connection
-// =========================
-
-const db = mysql.createConnection({
-
-    host: process.env.DB_HOST,
-
-    user: process.env.DB_USER,
-
-    password: process.env.DB_PASSWORD,
-
-    database: process.env.DB_NAME
-
-});
+// Serve HTML, CSS, JS, images, music etc.
+app.use(express.static(publicFolder));
 
 
-// =========================
-// MySQL Connect
-// =========================
+// ===============================
+// MYSQL CONNECTION
+// ===============================
 
-db.connect((err) => {
+let db;
 
-    if (err) {
+async function connectDB() {
+    try {
+        db = await mysql.createPool({
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT) || 3306,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
 
-        console.log(
-            "❌ MySQL connection failed:",
-            err.message
-        );
+            waitForConnections: true,
+            connectionLimit: 10,
+            queueLimit: 0
+        });
 
-    } else {
+        // Test connection
+        const connection = await db.getConnection();
+        console.log("✅ MySQL connected successfully!");
+        connection.release();
 
-        console.log(
-            "✅ MySQL connected successfully!"
-        );
-
+    } catch (error) {
+        console.error("❌ MySQL connection failed:");
+        console.error(error.message);
     }
+}
 
-});
+connectDB();
 
 
-// =========================
-// Home Page
-// =========================
+// ===============================
+// HOME PAGE
+// ===============================
 
 app.get("/", (req, res) => {
+    const indexPath = path.join(publicFolder, "index.html");
 
-    res.sendFile(
-        path.join(
-            __dirname,
-            "public",
-            "index.html"
-        )
-    );
-
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        res.status(404).send("index.html not found");
+    }
 });
 
 
-// =========================
+// ===============================
 // SAVE RESPONSE
-// =========================
+// ===============================
 
-app.post("/api/responses", (req, res) => {
+app.post("/api/responses", async (req, res) => {
 
-    console.log("📥 Data received:", req.body);
+    try {
 
-
-    const {
-
-        name,
-
-        phone,
-
-        answer1,
-
-        answer2,
-
-        message,
-
-        latitude,
-
-        longitude
-
-    } = req.body;
-
-
-    // =========================
-    // Required Fields
-    // =========================
-
-    if (!name) {
-
-        return res.status(400).json({
-
-            success: false,
-
-            message: "Name is required."
-
-        });
-
-    }
-
-
-    if (!phone) {
-
-        return res.status(400).json({
-
-            success: false,
-
-            message: "Phone number is required."
-
-        });
-
-    }
-
-
-    if (!answer1) {
-
-        return res.status(400).json({
-
-            success: false,
-
-            message: "Question 1 answer is required."
-
-        });
-
-    }
-
-
-    if (!answer2) {
-
-        return res.status(400).json({
-
-            success: false,
-
-            message: "Final question answer is required."
-
-        });
-
-    }
-
-
-    if (
-        latitude === undefined ||
-        latitude === null ||
-        longitude === undefined ||
-        longitude === null
-    ) {
-
-        return res.status(400).json({
-
-            success: false,
-
-            message: "Location is required."
-
-        });
-
-    }
-
-
-    // =========================
-    // Phone Validation
-    // =========================
-
-    if (!/^[6-9][0-9]{9}$/.test(phone)) {
-
-        return res.status(400).json({
-
-            success: false,
-
-            message:
-                "Please enter a valid 10-digit phone number."
-
-        });
-
-    }
-
-
-    // =========================
-    // SQL
-    // =========================
-
-    const sql = `
-
-        INSERT INTO responses
-
-        (
-
+        const {
             name,
-
             phone,
-
-            answer1,
-
-            answer2,
-
+            city,
+            rating,
             message,
-
             latitude,
-
             longitude
+        } = req.body;
 
-        )
+        console.log("📩 New response received:");
+        console.log(req.body);
 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-
-    `;
-
-
-    db.query(
-
-        sql,
-
-        [
-
-            name,
-
-            phone,
-
-            answer1,
-
-            answer2,
-
-            message || null,
-
-            latitude,
-
-            longitude
-
-        ],
-
-        (err, result) => {
-
-
-            if (err) {
-
-                console.log(
-                    "❌ Database error:",
-                    err.message
-                );
-
-
-                return res.status(500).json({
-
-                    success: false,
-
-                    message:
-                        "Failed to save response."
-
-                });
-
-            }
-
-
-            console.log(
-                "❤️ Response saved! ID:",
-                result.insertId
-            );
-
-
-            res.json({
-
-                success: true,
-
-                message:
-                    "Your response has been saved ❤️"
-
+        if (!db) {
+            return res.status(500).json({
+                success: false,
+                message: "Database is not connected"
             });
-
         }
 
-    );
+        // Insert response
+        const sql = `
+            INSERT INTO responses
+            (name, phone, city, rating, message, latitude, longitude)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
 
+        await db.execute(sql, [
+            name || null,
+            phone || null,
+            city || null,
+            rating || null,
+            message || null,
+            latitude || null,
+            longitude || null
+        ]);
+
+        console.log("✅ Response saved to MySQL!");
+
+        res.status(201).json({
+            success: true,
+            message: "Response saved successfully"
+        });
+
+    } catch (error) {
+
+        console.error("❌ Error saving response:");
+        console.error(error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to save response",
+            error: error.message
+        });
+    }
 });
 
 
-// =========================
-// Start Server
-// =========================
+// ===============================
+// GET ALL RESPONSES
+// ===============================
 
-app.listen(PORT, () => {
+app.get("/api/responses", async (req, res) => {
 
-    console.log(
-        `🚀 Server running at http://localhost:${PORT}`
-    );
+    try {
 
+        if (!db) {
+            return res.status(500).json({
+                success: false,
+                message: "Database is not connected"
+            });
+        }
+
+        const [rows] = await db.execute(
+            "SELECT * FROM responses ORDER BY id DESC"
+        );
+
+        res.json({
+            success: true,
+            data: rows
+        });
+
+    } catch (error) {
+
+        console.error("❌ Error getting responses:");
+        console.error(error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to get responses"
+        });
+    }
+});
+
+
+// ===============================
+// HEALTH CHECK
+// ===============================
+
+app.get("/health", (req, res) => {
+    res.json({
+        status: "OK",
+        message: "Love Experience server is running ❤️"
+    });
+});
+
+
+// ===============================
+// PORT
+// ===============================
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+    console.log("=================================");
+    console.log("❤️ Love Experience Server Started");
+    console.log(`🚀 Port: ${PORT}`);
+    console.log("=================================");
 });
