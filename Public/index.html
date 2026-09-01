@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Little Something For You ❤️</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="floating-hearts">
+    <span>❤️</span>
+    <span>💕</span>
+    <span>💗</span>
+    <span>💖</span>
+    <span>💕</span>
+</div>
+
+<main class="page">
+    <div class="card">
+
+        <div class="heart-icon">❤️</div>
+
+        <p class="small-text">Hey...</p>
+
+        <h1>
+            A Little Something<br>
+            <span>For You Madam Jii</span>
+        </h1>
+
+        <p class="note">
+            This isn't just another quiz.<br>
+            Someone took a little time to make
+            something especially for you. 💌
+        </p>
+
+        <button id="startButton">
+            🎵 Start the Experience
+        </button>
+
+        <p class="creator">
+            Made with ❤️ by <strong>Piyush</strong>
+        </p>
+
+    </div>
+</main>
+
+<audio id="introMusic" loop>
+    <source src="music/song1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const startButton = document.getElementById("startButton");
+const music = document.getElementById("introMusic");
+
+startButton.addEventListener("click", function () {
+
+    music.play().catch(() => {});
+
+    window.location.href = "page2.html";
+});
+</script>
+
+</body>
+</html>

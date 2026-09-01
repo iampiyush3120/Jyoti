@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Chhoti Si Baat ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="floating-hearts">
+    <span>❤️</span>
+    <span>💕</span>
+    <span>💗</span>
+    <span>💖</span>
+</div>
+
+<main class="page">
+
+<div class="card">
+
+    <div class="heart-icon">
+        👋
+    </div>
+
+    <p class="small-text">
+        Ek chhoti si information...
+    </p>
+
+    <h1>
+        Sabse Pehle<br>
+        <span>Naam Batao ❤️</span>
+    </h1>
+
+    <p class="note">
+        Experience ko thoda personal banane ke liye
+        tumhara naam chahiye. 💌
+    </p>
+
+    <input
+        type="text"
+        id="name"
+        placeholder="Apna naam likho..."
+        maxlength="100"
+    >
+
+    <p id="error"></p>
+
+    <button onclick="goNext()">
+        Aage Chalo ❤️
+    </button>
+
+    <p class="creator">
+        Made with ❤️ by <strong>Piyush</strong>
+    </p>
+
+</div>
+
+</main>
+
+<script>
+
+function goNext() {
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    const error =
+        document.getElementById("error");
+
+    if (name === "") {
+
+        error.innerText =
+            "Pehle apna naam enter karo ❤️";
+
+        return;
+    }
+
+    // Naam temporary save hoga
+    sessionStorage.setItem("userName", name);
+
+    // Next step
+    window.location.href = "page5b.html";
+}
+
+</script>
+
+</body>
+</html>

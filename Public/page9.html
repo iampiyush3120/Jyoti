@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Chhota Sa Question ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="floating-hearts">
+    <span>❤️</span>
+    <span>💕</span>
+    <span>💗</span>
+    <span>💖</span>
+    <span>💘</span>
+</div>
+
+<main class="page">
+
+<div class="card">
+
+    <div class="heart-icon">
+        💭
+    </div>
+
+    <p class="small-text">
+        Ab thoda tum batao...
+    </p>
+
+    <h1>
+        Ek Chhota Sa<br>
+        <span>Question ❤️</span>
+    </h1>
+
+    <p class="note">
+        Agar tumhe mere saath ek perfect day
+        spend karna ho, toh kya choose karogi? 😌
+    </p>
+
+    <div class="options">
+
+        <button onclick="selectAnswer('Coffee & Talks ☕')">
+            ☕ Coffee & Talks
+        </button>
+
+        <button onclick="selectAnswer('Long Drive 🚗')">
+            🚗 Long Drive
+        </button>
+
+        <button onclick="selectAnswer('Movie & Chill 🎬')">
+            🎬 Movie & Chill
+        </button>
+
+        <button onclick="selectAnswer('Just Walking & Talking ❤️')">
+            ❤️ Walking & Talking
+        </button>
+
+    </div>
+
+    <p id="selected"></p>
+
+    <button
+        id="nextButton"
+        onclick="goNext()"
+        style="display:none;"
+    >
+        Aage Chalo ❤️
+    </button>
+
+    <p class="creator">
+        Made with ❤️ by <strong>Piyush</strong>
+    </p>
+
+</div>
+
+</main>
+
+<script>
+
+function selectAnswer(answer) {
+
+    sessionStorage.setItem("answer1", answer);
+
+    document.getElementById("selected").innerText =
+        "Nice choice ❤️";
+
+    document.getElementById("nextButton").style.display =
+        "inline-block";
+}
+
+
+function goNext() {
+
+    window.location.href = "page10.html";
+
+}
+
+</script>
+
+</body>
+</html>

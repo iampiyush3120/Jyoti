@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>A Smile For You ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        .final-card {
+            text-align: center;
+            animation: appear 1.2s ease;
+        }
+
+        .smile {
+            font-size: 90px;
+            margin-bottom: 15px;
+            animation: smileAnimation 2s ease-in-out infinite;
+        }
+
+        .final-title {
+            font-size: 38px;
+            margin-bottom: 20px;
+        }
+
+        .final-message {
+            font-size: 18px;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .heart-big {
+            font-size: 35px;
+            margin-top: 20px;
+            animation: heartBeat 1.2s infinite;
+        }
+
+        @keyframes smileAnimation {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15) rotate(3deg);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+
+        }
+
+        @keyframes heartBeat {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.25);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+
+        }
+
+        @keyframes appear {
+
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        .floating-smile {
+            position: fixed;
+            bottom: -50px;
+            font-size: 25px;
+            animation: floatUp 5s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) scale(1.5);
+                opacity: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- Floating Hearts -->
+
+    <div class="floating-hearts">
+
+        <span>❤️</span>
+        <span>💕</span>
+        <span>💗</span>
+        <span>💖</span>
+        <span>💘</span>
+
+    </div>
+
+
+    <!-- Main Content -->
+
+    <main class="page">
+
+        <div class="card final-card">
+
+
+            <div class="smile">
+                😊
+            </div>
+
+
+            <p class="small-text">
+                That's it... ❤️
+            </p>
+
+
+            <h1 class="final-title">
+
+                Thank You<br>
+
+                <span>
+                    For Being Here ❤️
+                </span>
+
+            </h1>
+
+
+            <div class="final-message">
+
+                <p>
+                    I hope is little experience ne
+                    tumhare face par ek smile zaroor laayi hogi. 😊
+                </p>
+
+                <p>
+                    Agar aayi hai...
+                    toh samjho mera kaam ho gaya. ❤️
+                </p>
+
+                <p>
+                    Aur agar nahi aayi...
+                    toh ek baar phir se smile karne ki koshish karo. 🤭
+                </p>
+
+            </div>
+
+
+            <div class="heart-big">
+                ❤️ 💕 ❤️
+            </div>
+
+
+            <p class="creator">
+                Made with ❤️ by <strong>Piyush</strong>
+            </p>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- 🎵 SONG 4 -->
+
+    <audio id="pageMusic" loop preload="auto">
+
+        <source
+            src="music/song5.mp3"
+            type="audio/mpeg">
+
+    </audio>
+
+
+    <script>
+
+
+        /* =========================
+           MUSIC
+        ========================= */
+
+        const music =
+            document.getElementById("pageMusic");
+
+        music.volume = 1.0;
+
+
+        function playMusic() {
+
+            music.play()
+                .then(function () {
+
+                    console.log(
+                        "Song 4 playing ❤️"
+                    );
+
+                })
+                .catch(function () {
+
+                    console.log(
+                        "Autoplay blocked by browser."
+                    );
+
+                });
+
+        }
+
+
+        // Page load par music play karne ki try
+
+        playMusic();
+
+
+        // Agar browser autoplay block kare,
+        // first click par music start hoga.
+
+        document.addEventListener(
+            "click",
+            function startMusic() {
+
+                playMusic();
+
+            },
+            { once: true }
+        );
+
+
+
+        /* =========================
+           FLOATING SMILES & HEARTS
+        ========================= */
+
+        function createSmile() {
+
+
+            const smiles = [
+
+                "😊",
+                "❤️",
+                "💕",
+                "🥰",
+                "💗",
+                "✨"
+
+            ];
+
+
+            const element =
+                document.createElement("div");
+
+
+            element.className =
+                "floating-smile";
+
+
+            element.innerText =
+                smiles[
+                    Math.floor(
+                        Math.random() *
+                        smiles.length
+                    )
+                ];
+
+
+            element.style.left =
+                Math.random() * 100 + "vw";
+
+
+            element.style.animationDuration =
+                (4 + Math.random() * 3) + "s";
+
+
+            document.body.appendChild(element);
+
+
+            setTimeout(function () {
+
+                element.remove();
+
+            }, 7000);
+
+        }
+
+
+        // Har 700ms mein ek floating emoji
+
+        setInterval(
+            createSmile,
+            700
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>

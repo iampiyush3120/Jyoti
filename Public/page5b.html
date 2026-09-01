@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Chhoti Si Baat ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="floating-hearts">
+        <span>❤️</span>
+        <span>💕</span>
+        <span>💗</span>
+        <span>💖</span>
+        <span>💘</span>
+    </div>
+
+    <main class="page">
+
+        <div class="card photo-card">
+
+            <div class="heart-icon">
+                💌
+            </div>
+
+            <p class="small-text">
+                Ek chhoti si request...
+            </p>
+
+            <h1>
+                Thoda Sa<br>
+                <span>Time Aur ❤️</span>
+            </h1>
+
+            <div class="photo-wrapper">
+
+                <img
+                    src="images/photo2.jpg"
+                    alt="A special memory"
+                    class="special-photo"
+                >
+
+            </div>
+
+            <div class="personal-note">
+
+                <p>
+                    Ab tak tum itna aage aa hi gayi ho,
+                    toh thoda sa aur time de do. ❤️
+                </p>
+
+                <p>
+                    Don't worry...
+                    kuch complicated nahi hai. 😌
+                </p>
+
+                <p>
+                    Bas ek chhoti si cheez aur share
+                    karni hai, phir story aage badhegi. 💌
+                </p>
+
+            </div>
+
+            <button id="nextButton">
+                Okay, Aage Chalo ❤️
+            </button>
+
+            <p class="creator">
+                Made with ❤️ by <strong>Piyush</strong>
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- ========================= -->
+    <!-- SONG -->
+    <!-- ========================= -->
+
+    <audio id="pageMusic" loop preload="auto">
+        <source src="music/song3.mp3" type="audio/mpeg">
+    </audio>
+
+
+    <script>
+
+        const music = document.getElementById("pageMusic");
+        const nextButton = document.getElementById("nextButton");
+
+
+        // Music start karne ki function
+        function playMusic() {
+
+            music.volume = 1.0;
+
+            const promise = music.play();
+
+            if (promise !== undefined) {
+
+                promise
+                    .then(function () {
+
+                        console.log("Song 2 started ❤️");
+
+                    })
+                    .catch(function () {
+
+                        console.log(
+                            "Browser ne autoplay block kiya."
+                        );
+
+                    });
+
+            }
+
+        }
+
+
+        /*
+         * Page par aate hi try
+         */
+        playMusic();
+
+
+        /*
+         * Agar browser autoplay block kare,
+         * toh first click par music start hoga.
+         */
+        document.addEventListener(
+            "click",
+            function () {
+
+                playMusic();
+
+            },
+            { once: true }
+        );
+
+
+        /*
+         * Next Page
+         */
+        nextButton.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "page6.html";
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

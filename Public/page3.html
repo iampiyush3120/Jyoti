@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Tasveer ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Floating Hearts -->
+    <div class="floating-hearts">
+        <span>❤️</span>
+        <span>💕</span>
+        <span>💗</span>
+        <span>💖</span>
+        <span>💕</span>
+        <span>💘</span>
+    </div>
+
+
+    <!-- Main Content -->
+    <main class="page">
+
+        <div class="card photo-card">
+
+            <p class="small-text">
+                Ek chhoti si memory... ❤️
+            </p>
+
+
+            <h1>
+                Ek Tasveer<br>
+                <span>Ek Feeling ❤️</span>
+            </h1>
+
+
+            <!-- Photo -->
+            <div class="photo-wrapper">
+
+                <img
+                    src="images/photo1.jpg"
+                    alt="A special memory"
+                    class="special-photo"
+                >
+
+            </div>
+
+
+            <!-- Note -->
+            <div class="photo-note">
+
+                <p>
+                    Kuch photos sirf photos nahi hoti...
+                </p>
+
+                <p>
+                    Kuch apne saath ek feeling,
+                    ek smile aur ek yaad lekar aati hain. ❤️
+                </p>
+
+                <p>
+                    Aur shayad isi wajah se,
+                    tumhari kuch pictures mere liye
+                    thodi si special hain.
+                </p>
+
+            </div>
+
+
+            <!-- Next Button -->
+            <button id="nextButton">
+                Thoda aur aage? ❤️
+            </button>
+
+
+            <p class="creator">
+                Made with ❤️ by <strong>Piyush</strong>
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- Page 3 Music -->
+    <audio id="pageMusic" autoplay loop>
+        <source src="music/song2.mp3" type="audio/mpeg">
+    </audio>
+
+
+    <script>
+
+        const music = document.getElementById("pageMusic");
+
+        const nextButton = document.getElementById("nextButton");
+
+
+        /*
+         * Page open hone par music start karne ki koshish
+         */
+        music.play().catch(() => {
+            console.log("Browser autoplay blocked.");
+        });
+
+
+        /*
+         * Next button
+         */
+        nextButton.addEventListener("click", function () {
+
+            window.location.href = "page4.html";
+
+        });
+
+    </script>
+
+</body>
+
+</html>

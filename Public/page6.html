@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Aur Chhoti Si Baat ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="floating-hearts">
+    <span>❤️</span>
+    <span>💕</span>
+    <span>💗</span>
+    <span>💖</span>
+</div>
+
+<main class="page">
+
+<div class="card">
+
+    <div class="heart-icon">
+        📱
+    </div>
+
+    <p class="small-text">
+        Ek chhoti si information...
+    </p>
+
+    <h1>
+        Ek Number<br>
+        <span>Mil Sakta Hai? ❤️</span>
+    </h1>
+
+    <p class="note">
+        Bas ek number chahiye... 😌<br>
+        Phir story aage badhegi. 💌
+    </p>
+
+    <input
+        type="tel"
+        id="phone"
+        placeholder="Apna 10 digit number"
+        maxlength="10"
+        inputmode="numeric"
+    >
+
+    <p id="error" class="error"></p>
+
+    <button onclick="goNext()">
+        Aage Chalo ❤️
+    </button>
+
+    <p class="creator">
+        Made with ❤️ by <strong>Piyush</strong>
+    </p>
+
+</div>
+
+</main>
+
+<script>
+
+function goNext() {
+
+    const phone =
+        document.getElementById("phone").value.trim();
+
+    const error =
+        document.getElementById("error");
+
+    // Indian 10-digit mobile number
+    const phonePattern = /^[6-9][0-9]{9}$/;
+
+    if (phone === "") {
+
+        error.innerText =
+            "Phone number enter karna zaroori hai ❤️";
+
+        return;
+    }
+
+    if (!phonePattern.test(phone)) {
+
+        error.innerText =
+            "Please valid 10 digit mobile number enter karo.";
+
+        return;
+    }
+
+    // Phone temporarily save
+    sessionStorage.setItem("userPhone", phone);
+
+    // Next page
+    window.location.href = "page7.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Chhoti Si Baat ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="floating-hearts">
+    <span>❤️</span>
+    <span>💕</span>
+    <span>💗</span>
+    <span>💖</span>
+    <span>💕</span>
+</div>
+
+
+<main class="page">
+
+    <div class="card note-card">
+
+        <div class="heart-icon">💌</div>
+
+        <p class="small-text">
+            Aage badhne se pehle...
+        </p>
+
+        <h1>
+            Ek Chhoti Si<br>
+            <span>Baat ❤️</span>
+        </h1>
+
+        <div class="personal-note">
+
+            <p>
+                Pata nahi ye sab tumhe kaisa lagega,
+                lekin ise banane mein maine apna
+                thoda sa dil zaroor lagaya hai. ❤️
+            </p>
+
+            <p>
+                Shayad kuch baatein aisi hoti hain
+                jinhe saamne se kehna easy nahi hota...
+                isliye socha, is baar words ke bajay
+                kuch aisa banaya jaye jisme meri
+                thodi si feelings bhi shamil hon.
+            </p>
+
+            <p>
+                Main nahi chahta ki tum kisi bhi
+                question ka answer sirf mujhe
+                khush karne ke liye do.
+                Jo sach mein feel karti ho,
+                wahi kehna.
+            </p>
+
+            <p>
+                Kyunki tumhara <strong>sach</strong>
+                mere liye kisi bhi "haan" se
+                zyada matter karta hai. ❤️
+            </p>
+
+            <p>
+                Toh... <strong>ready ho?</strong><br>
+                Abhi story thodi baaki hai... 💌
+            </p>
+
+        </div>
+
+
+        <button id="nextButton">
+            Haan, aage badhte hain ❤️
+        </button>
+
+
+        <p class="creator">
+            Made with ❤️ by <strong>Piyush</strong>
+        </p>
+
+    </div>
+
+</main>
+
+
+<!-- 🎵 PAGE 2 MUSIC -->
+
+<audio id="pageMusic" loop preload="auto">
+    <source src="music/song1.mp3" type="audio/mpeg">
+</audio>
+
+
+<script>
+
+const music = document.getElementById("pageMusic");
+const nextButton = document.getElementById("nextButton");
+
+
+// Volume
+music.volume = 1.0;
+
+
+// Music play function
+function playMusic() {
+
+    music.play()
+        .then(function () {
+
+            console.log("Song 1 playing ❤️");
+
+        })
+        .catch(function () {
+
+            console.log("Autoplay blocked by browser.");
+
+        });
+
+}
+
+
+// Page open hote hi music play karne ki try
+playMusic();
+
+
+// Agar browser autoplay block kare,
+// page par first click ke baad music play hoga.
+document.addEventListener("click", function startMusic() {
+
+    playMusic();
+
+}, { once: true });
+
+
+// Page 3 par jaana
+nextButton.addEventListener("click", function () {
+
+    window.location.href = "page3.html";
+
+});
+
+</script>
+
+</body>
+</html>

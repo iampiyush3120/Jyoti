@@ -1,0 +1,322 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16000a,
+            #3b0015,
+            #120008
+        );
+
+    color: white;
+    overflow-x: hidden;
+}
+
+.page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 25px 15px;
+
+    position: relative;
+    z-index: 2;
+}
+
+.card {
+    width: 100%;
+    max-width: 650px;
+
+    padding: 40px 30px;
+
+    text-align: center;
+
+    border-radius: 25px;
+
+    background: rgba(255,255,255,0.08);
+
+    border:
+        1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.45);
+
+    backdrop-filter: blur(12px);
+
+    animation: cardIn 1s ease;
+}
+
+@keyframes cardIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+.heart-icon {
+    font-size: 55px;
+
+    animation:
+        heartBeat 1.5s infinite;
+}
+
+@keyframes heartBeat {
+
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+}
+
+.small-text {
+    font-size: 15px;
+    opacity: 0.75;
+    margin-top: 15px;
+}
+
+h1 {
+    font-size: 42px;
+    line-height: 1.2;
+    margin: 15px 0;
+}
+
+h1 span {
+    color: #ff9fba;
+}
+
+.note,
+.photo-note {
+    font-size: 17px;
+    line-height: 1.8;
+    opacity: 0.9;
+}
+
+.personal-note {
+    text-align: left;
+
+    margin: 25px auto;
+
+    max-width: 560px;
+}
+
+.personal-note p {
+    line-height: 1.8;
+
+    font-size: 16px;
+
+    margin-bottom: 20px;
+}
+
+button {
+    border: none;
+
+    padding:
+        14px 25px;
+
+    border-radius: 30px;
+
+    background: #ff4f81;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    margin-top: 15px;
+}
+
+button:hover {
+    transform: scale(1.06);
+}
+
+.creator {
+    margin-top: 30px;
+
+    font-size: 14px;
+
+    opacity: 0.65;
+}
+
+
+/* PHOTO */
+
+.photo-wrapper {
+    width: 100%;
+
+    max-width: 390px;
+
+    margin: 25px auto;
+
+    position: relative;
+
+    overflow: visible;
+}
+
+.photo-wrapper img {
+    display: block;
+
+    width: 100%;
+
+    max-height: 430px;
+
+    object-fit: cover;
+
+    border-radius: 20px;
+
+    animation:
+        photoFade 1.5s ease,
+        photoZoom 6s ease-in-out infinite alternate;
+
+    box-shadow:
+        0 15px 45px rgba(0,0,0,0.5);
+}
+
+@keyframes photoFade {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+@keyframes photoZoom {
+
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.04);
+    }
+
+}
+
+
+/* FLOATING HEARTS */
+
+.floating-hearts span {
+    position: fixed;
+
+    bottom: -40px;
+
+    font-size: 22px;
+
+    animation:
+        floatHeart 8s linear infinite;
+
+    opacity: 0.6;
+
+    z-index: 1;
+}
+
+.floating-hearts span:nth-child(1) {
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.floating-hearts span:nth-child(2) {
+    left: 30%;
+    animation-delay: 2s;
+}
+
+.floating-hearts span:nth-child(3) {
+    left: 50%;
+    animation-delay: 4s;
+}
+
+.floating-hearts span:nth-child(4) {
+    left: 70%;
+    animation-delay: 1s;
+}
+
+.floating-hearts span:nth-child(5) {
+    left: 90%;
+    animation-delay: 3s;
+}
+
+.floating-hearts span:nth-child(6) {
+    left: 20%;
+    animation-delay: 5s;
+}
+
+@keyframes floatHeart {
+
+    from {
+        transform:
+            translateY(0)
+            rotate(0deg);
+
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.7;
+    }
+
+    to {
+        transform:
+            translateY(-110vh)
+            rotate(360deg);
+
+        opacity: 0;
+    }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .page {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 30px 20px;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    .personal-note p {
+        font-size: 15px;
+    }
+
+    .photo-wrapper {
+        max-width: 320px;
+    }
+
+    .photo-wrapper img {
+        max-height: 380px;
+    }
+
+}

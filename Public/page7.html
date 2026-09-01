@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ek Last Information ❤️</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="floating-hearts">
+    <span>❤️</span>
+    <span>💕</span>
+    <span>💗</span>
+    <span>💖</span>
+    <span>💘</span>
+</div>
+
+<main class="page">
+
+<div class="card">
+
+    <div class="heart-icon">
+        📍
+    </div>
+
+    <p class="small-text">
+        Bas ek last information...
+    </p>
+
+    <h1>
+        Tum<br>
+        <span>Kahan Ho? 📍</span>
+    </h1>
+
+    <p class="note">
+        Experience ko complete karne ke liye
+        apni location share karni hogi. ❤️
+    </p>
+
+    <button onclick="getLocation()" id="locationButton">
+        📍 Share My Location
+    </button>
+
+    <p id="locationStatus"></p>
+
+    <button
+        onclick="goNext()"
+        id="nextButton"
+        style="display:none;"
+    >
+        Aage Chalo ❤️
+    </button>
+
+    <p class="creator">
+        Made with ❤️ by <strong>Piyush</strong>
+    </p>
+
+</div>
+
+</main>
+
+<script>
+
+let latitude = null;
+let longitude = null;
+
+function getLocation() {
+
+    const status =
+        document.getElementById("locationStatus");
+
+    if (!navigator.geolocation) {
+
+        status.innerText =
+            "Tumhara browser location support nahi karta.";
+
+        return;
+    }
+
+    status.innerText =
+        "Location permission ka wait kar rahe hain... 📍";
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            latitude =
+                position.coords.latitude;
+
+            longitude =
+                position.coords.longitude;
+
+            // Location temporarily save
+            sessionStorage.setItem(
+                "latitude",
+                latitude
+            );
+
+            sessionStorage.setItem(
+                "longitude",
+                longitude
+            );
+
+            status.innerText =
+                "Location successfully mil gayi ❤️";
+
+            document.getElementById(
+                "locationButton"
+            ).style.display = "none";
+
+            document.getElementById(
+                "nextButton"
+            ).style.display = "inline-block";
+
+        },
+
+        function(error) {
+
+            status.innerText =
+                "Location nahi mili. Please browser mein Location ko Allow karke dobara try karo. 📍";
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+
+    );
+}
+
+
+function goNext() {
+
+    if (
+        latitude === null ||
+        longitude === null
+    ) {
+
+        document.getElementById(
+            "locationStatus"
+        ).innerText =
+            "Pehle location share karna zaroori hai ❤️";
+
+        return;
+    }
+
+    window.location.href = "page8.html";
+}
+
+</script>
+
+</body>
+</html>
