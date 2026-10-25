@@ -1,3 +1,4 @@
+
 const express = require("express");
 const mysql = require("mysql2/promise");
 const path = require("path");
@@ -15,7 +16,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // =====================================
 // PUBLIC FOLDER
 // =====================================
@@ -26,16 +26,18 @@ if (!fs.existsSync(publicFolder)) {
     publicFolder = path.join(__dirname, "Public");
 }
 
-console.log("📁 Public folder:", publicFolder);
+console.log("Public folder:", publicFolder);
 
+if (!fs.existsSync(publicFolder)) {
+    console.error("ERROR: Public folder not found!");
+}
 
 // =====================================
-// SERVE STATIC FILES
+// SERVE WEBSITE AND ADMIN FILES
 // =====================================
 
 app.use(express.static(publicFolder));
 app.use("/admin", express.static(path.join(__dirname, "admin")));
-
 
 // =====================================
 // MYSQL CONNECTION
@@ -44,104 +46,65 @@ app.use("/admin", express.static(path.join(__dirname, "admin")));
 let db = null;
 
 async function connectDB() {
-    try {
+    if (db) {
+        return db;
+    }
 
-        db = await mysql.createPool({
+    try {
+        const pool = mysql.createPool({
             host: process.env.DB_HOST,
             port: Number(process.env.DB_PORT || 3306),
-
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
-
             waitForConnections: true,
             connectionLimit: 10,
             queueLimit: 0
         });
 
-        // Test connection
-        const connection = await db.getConnection();
-
-        console.log("=================================");
-        console.log("✅ MySQL connected successfully!");
-        console.log("📡 Host:", process.env.DB_HOST);
-        console.log("🔌 Port:", process.env.DB_PORT || 3306);
-        console.log("🗄️ Database:", process.env.DB_NAME);
-        console.log("=================================");
-
+        // Verify that the database is reachable.
+        const connection = await pool.getConnection();
         connection.release();
 
+        db = pool;
+
+        console.log("MySQL connected successfully!");
+        return db;
     } catch (error) {
-
-        console.error("=================================");
-        console.error("❌ MySQL connection failed!");
-        console.error(error.message);
-        console.error("=================================");
-
+        console.error("MySQL connection failed:", error.message);
         db = null;
+        return null;
     }
 }
-
-connectDB();
-
 
 // =====================================
 // HOME PAGE
 // =====================================
 
 app.get("/", (req, res) => {
-
     const indexPath = path.join(publicFolder, "index.html");
 
     if (fs.existsSync(indexPath)) {
-
-        res.sendFile(indexPath);
-
-    } else {
-
-        res.status(404).send("index.html not found");
-
+        return res.sendFile(indexPath);
     }
+
+    return res.status(404).send("index.html not found");
 });
 
-
 // =====================================
-// SAVE RESPONSE
+// SAVE FORM RESPONSE
 // =====================================
 
 app.post("/api/responses", async (req, res) => {
-
     try {
+        const database = await connectDB();
 
-        console.log("=================================");
-        console.log("📩 New response received:");
-        console.log(req.body);
-        console.log("=================================");
-
-
-        // ---------------------------------
-        // CHECK DATABASE
-        // ---------------------------------
-
-        if (!db) {
-            await connectDB();
-        }
-
-        if (!db) {
-
-            console.error("❌ Database is not connected");
-
-            return res.status(500).json({
+        if (!database) {
+            return res.status(503).json({
                 success: false,
                 message: "Database is not connected"
             });
-
         }
-
-
-        // ---------------------------------
-        // GET FORM DATA
-        // ---------------------------------
 
         const {
             name,
@@ -156,130 +119,56 @@ app.post("/api/responses", async (req, res) => {
             answer3
         } = req.body;
 
-
-        // ---------------------------------
-        // SAFE VALUES
-        // ---------------------------------
-
-        const safeName = name || "";
-        const safePhone = phone || "";
-        const safeCity = city || "";
-        const safeRating = (rating !== undefined && rating !== null && rating !== "" && !isNaN(Number(rating))) ? Number(rating) : null;
-        const safeMessage = message || "";
-        const safeLatitude = (latitude !== undefined && latitude !== null && latitude !== "" && !isNaN(Number(latitude))) ? Number(latitude) : null;
-        const safeLongitude = (longitude !== undefined && longitude !== null && longitude !== "" && !isNaN(Number(longitude))) ? Number(longitude) : null;
-
-
-
-        // =================================
-        // CHECK WHICH COLUMNS EXIST
-        // =================================
-
-        const [columns] = await db.execute(
+        const [columns] = await database.execute(
             "SHOW COLUMNS FROM responses"
         );
 
         const columnNames = columns.map(column => column.Field);
 
+        const valuesByColumn = {
+            name: name || "",
+            phone: phone || "",
+            city: city || "",
+            rating:
+                rating !== undefined &&
+                rating !== null &&
+                rating !== "" &&
+                Number.isFinite(Number(rating))
+                    ? Number(rating)
+                    : null,
+            message: message || "",
+            latitude:
+                latitude !== undefined &&
+                latitude !== null &&
+                latitude !== "" &&
+                Number.isFinite(Number(latitude))
+                    ? Number(latitude)
+                    : null,
+            longitude:
+                longitude !== undefined &&
+                longitude !== null &&
+                longitude !== "" &&
+                Number.isFinite(Number(longitude))
+                    ? Number(longitude)
+                    : null,
+            answer1: answer1 || "",
+            answer2: answer2 || "",
+            answer3: answer3 || ""
+        };
 
-        // =================================
-        // BUILD INSERT DYNAMICALLY
-        // =================================
-
-        const insertColumns = [];
-        const insertValues = [];
-
-
-        // Name
-        if (columnNames.includes("name")) {
-            insertColumns.push("name");
-            insertValues.push(safeName);
-        }
-
-
-        // Phone
-        if (columnNames.includes("phone")) {
-            insertColumns.push("phone");
-            insertValues.push(safePhone);
-        }
-
-
-        // City
-        if (columnNames.includes("city")) {
-            insertColumns.push("city");
-            insertValues.push(safeCity);
-        }
-
-
-        // Rating
-        if (columnNames.includes("rating")) {
-            insertColumns.push("rating");
-            insertValues.push(safeRating);
-        }
-
-
-        // Message
-        if (columnNames.includes("message")) {
-            insertColumns.push("message");
-            insertValues.push(safeMessage);
-        }
-
-
-        // Latitude
-        if (columnNames.includes("latitude")) {
-            insertColumns.push("latitude");
-            insertValues.push(safeLatitude);
-        }
-
-
-        // Longitude
-        if (columnNames.includes("longitude")) {
-            insertColumns.push("longitude");
-            insertValues.push(safeLongitude);
-        }
-
-
-        // Answer 1
-        if (columnNames.includes("answer1")) {
-            insertColumns.push("answer1");
-            insertValues.push(answer1 || "");
-        }
-
-
-        // Answer 2
-        if (columnNames.includes("answer2")) {
-            insertColumns.push("answer2");
-            insertValues.push(answer2 || "");
-        }
-
-
-        // Answer 3
-        if (columnNames.includes("answer3")) {
-            insertColumns.push("answer3");
-            insertValues.push(answer3 || "");
-        }
-
-
-        // =================================
-        // CHECK COLUMNS
-        // =================================
+        const insertColumns = Object.keys(valuesByColumn)
+            .filter(column => columnNames.includes(column));
 
         if (insertColumns.length === 0) {
-
             throw new Error(
                 "No matching columns found in responses table"
             );
-
         }
 
-
-        // =================================
-        // CREATE SQL
-        // =================================
-
-        const placeholders = insertColumns
-            .map(() => "?")
-            .join(", ");
+        const placeholders = insertColumns.map(() => "?").join(", ");
+        const values = insertColumns.map(
+            column => valuesByColumn[column]
+        );
 
         const sql = `
             INSERT INTO responses
@@ -287,151 +176,76 @@ app.post("/api/responses", async (req, res) => {
             VALUES (${placeholders})
         `;
 
+        await database.execute(sql, values);
 
-        console.log("📝 SQL:", sql);
-
-
-        // =================================
-        // INSERT INTO DATABASE
-        // =================================
-
-        await db.execute(sql, insertValues);
-
-
-        console.log("=================================");
-        console.log("✅ Response saved to MySQL!");
-        console.log("=================================");
-
-
-        // =================================
-        // SUCCESS RESPONSE
-        // =================================
-
-        res.status(201).json({
-
+        return res.status(201).json({
             success: true,
-
             message: "Response saved successfully"
-
         });
-
-
     } catch (error) {
+        console.error("Error saving response:", error.message);
 
-        console.error("=================================");
-        console.error("❌ Error saving response:");
-        console.error(error.message);
-        console.error("=================================");
-
-
-        res.status(500).json({
-
+        return res.status(500).json({
             success: false,
-
-            message: "Failed to save response",
-
-            error: error.message
-
+            message: "Failed to save response"
         });
-
     }
-
 });
-
 
 // =====================================
 // GET ALL RESPONSES
 // =====================================
 
 app.get("/api/responses", async (req, res) => {
-
     try {
+        const database = await connectDB();
 
-        if (!db) {
-            await connectDB();
-        }
-
-        if (!db) {
-
-            return res.status(500).json({
-
+        if (!database) {
+            return res.status(503).json({
                 success: false,
-
                 message: "Database is not connected"
-
             });
-
         }
 
-
-        const [rows] = await db.execute(
+        const [rows] = await database.execute(
             "SELECT * FROM responses ORDER BY id DESC"
         );
 
-
-        res.json({
-
+        return res.json({
             success: true,
-
             data: rows
-
         });
-
-
     } catch (error) {
+        console.error("Error getting responses:", error.message);
 
-        console.error("❌ Error getting responses:");
-        console.error(error.message);
-
-
-        res.status(500).json({
-
+        return res.status(500).json({
             success: false,
-
-            message: "Failed to get responses",
-
-            error: error.message
-
+            message: "Failed to get responses"
         });
-
     }
-
 });
-
 
 // =====================================
 // HEALTH CHECK
 // =====================================
 
 app.get("/health", (req, res) => {
-
     res.json({
-
         status: "OK",
-
-        message: "Love Experience server is running ❤️"
-
+        message: "Love Experience server is running"
     });
-
 });
-
 
 // =====================================
 // 404 HANDLER
 // =====================================
 
 app.use((req, res) => {
-
     res.status(404).json({
-
         success: false,
-
         message: "Route not found"
-
     });
-
 });
-
 
 // =====================================
 // START SERVER
@@ -440,10 +254,6 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
-
-    console.log("=================================");
-    console.log("❤️ Love Experience Server Started");
-    console.log(`🚀 Port: ${PORT}`);
-    console.log("=================================");
-
+    console.log("Love Experience server started");
+    console.log(`Server listening on port ${PORT}`);
 });
