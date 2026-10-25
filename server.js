@@ -103,7 +103,7 @@ app.post("/api/responses", async (req, res) => {
 try {
 const database = await connectDB();
 
-```
+
     if (!database) {
         return res.status(503).json({
             success: false,
@@ -170,7 +170,7 @@ const database = await connectDB();
     }
 
     const quotedColumns = insertColumns
-       .map(column => "" + column + "")
+        .map(column => "`" + column + "`")
         .join(", ");
 
     const placeholders = insertColumns.map(() => "?").join(", ");
@@ -200,7 +200,63 @@ const database = await connectDB();
         message: "Failed to save response"
     });
 }
-```
+
 
 });
 
+javascript
+// GET ALL RESPONSES
+app.get("/api/responses", async (req, res) => {
+    try {
+        const database = await connectDB();
+
+        if (!database) {
+            return res.status(503).json({
+                success: false,
+                message: "Database is not connected"
+            });
+        }
+
+        const [rows] = await database.execute(
+            "SELECT * FROM responses ORDER BY id DESC"
+        );
+
+        return res.json({
+            success: true,
+            data: rows
+        });
+    } catch (error) {
+        console.error("Error getting responses:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to get responses"
+        });
+    }
+});
+
+
+
+// HEALTH CHECK
+app.get("/health", (req, res) => {
+res.json({
+status: "OK",
+message: "Love Experience server is running"
+});
+});
+
+// 404 HANDLER
+app.use((req, res) => {
+res.status(404).json({
+success: false,
+message: "Route not found"
+});
+});
+
+// START SERVER
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+console.log("Love Experience server started");
+console.log("Server listening on port " + PORT);
+});
