@@ -62,12 +62,38 @@ try {
         connectTimeout: 10000
     });
 
-    const connection = await pool.getConnection();
-    await connection.ping();
-    connection.release();
+  const connection = await pool.getConnection();
 
-    db = pool;
-    console.log("MySQL connected successfully!");
+try {
+await connection.ping();
+
+
+await connection.query(`
+    CREATE TABLE IF NOT EXISTS responses (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) DEFAULT NULL,
+        phone VARCHAR(50) DEFAULT NULL,
+        city VARCHAR(100) DEFAULT NULL,
+        rating DECIMAL(3,1) DEFAULT NULL,
+        message TEXT,
+        latitude DECIMAL(10,7) DEFAULT NULL,
+        longitude DECIMAL(10,7) DEFAULT NULL,
+        answer1 TEXT,
+        answer2 TEXT,
+        answer3 TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+`);
+
+
+} finally {
+connection.release();
+}
+
+db = pool;
+console.log("MySQL connected successfully!");
+console.log("Responses table is ready!");
+
 
     return db;
 } catch (error) {
