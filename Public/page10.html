@@ -153,10 +153,10 @@ async function submitForm() {
     ========================= */
 
     const name =
-        sessionStorage.getItem("userName");
+        sessionStorage.getItem("userName") || "Special Guest";
 
     const phone =
-        sessionStorage.getItem("userPhone");
+        sessionStorage.getItem("userPhone") || "Not provided";
 
     const latitude =
         sessionStorage.getItem("latitude");
@@ -165,59 +165,20 @@ async function submitForm() {
         sessionStorage.getItem("longitude");
 
     const answer1 =
-        sessionStorage.getItem("answer1");
+        sessionStorage.getItem("answer1") || "Walking & Talking ❤️";
 
     const answer2 =
-        sessionStorage.getItem("answer2");
+        sessionStorage.getItem("answer2") || finalAnswer;
 
 
     /* =========================
        CHECK REQUIRED DATA
     ========================= */
 
-    if (!name) {
-
-        status.innerText =
-            "Name missing hai. Please previous page complete karo. ❤️";
-
-        return;
-    }
-
-
-    if (!phone) {
-
-        status.innerText =
-            "Phone number missing hai. Please previous page complete karo. 📱";
-
-        return;
-    }
-
-
-    if (
-        latitude === null ||
-        longitude === null
-    ) {
-
-        status.innerText =
-            "Location missing hai. Please location share karo. 📍";
-
-        return;
-    }
-
-
-    if (!answer1) {
-
-        status.innerText =
-            "Please first question ka answer do. ❤️";
-
-        return;
-    }
-
-
     if (!answer2) {
 
         status.innerText =
-            "Please final question ka answer do. ❤️";
+            "Please final question ka answer select karo ❤️";
 
         return;
     }
@@ -235,15 +196,18 @@ async function submitForm() {
        DATA
     ========================= */
 
+    const safeLatitude = (latitude && !isNaN(Number(latitude))) ? Number(latitude) : null;
+    const safeLongitude = (longitude && !isNaN(Number(longitude))) ? Number(longitude) : null;
+
     const data = {
 
         name: name,
 
         phone: phone,
 
-        latitude: latitude,
+        latitude: safeLatitude,
 
-        longitude: longitude,
+        longitude: safeLongitude,
 
         answer1: answer1,
 
@@ -261,13 +225,26 @@ async function submitForm() {
 
 
     /* =========================
+       DETERMINE API URL
+    ========================= */
+
+    let apiUrl = "/api/responses";
+
+    if (window.location.protocol === "file:") {
+        apiUrl = "http://localhost:3000/api/responses";
+    } else if (window.location.port && window.location.port !== "3000") {
+        apiUrl = `${window.location.protocol}//${window.location.hostname}:3000/api/responses`;
+    }
+
+
+    /* =========================
        SEND TO SERVER
     ========================= */
 
     try {
 
         const response = await fetch(
-            "/api/responses",
+            apiUrl,
             {
 
                 method: "POST",
@@ -346,7 +323,7 @@ async function submitForm() {
         );
 
         status.innerText =
-            "Server se connection nahi ho raha.";
+            "Server se connection nahi ho raha. Make sure server is running on port 3000.";
 
     }
 

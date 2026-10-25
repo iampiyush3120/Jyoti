@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql2/promise");
 const path = require("path");
 const fs = require("fs");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 // MIDDLEWARE
 // =====================================
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -32,6 +34,7 @@ console.log("📁 Public folder:", publicFolder);
 // =====================================
 
 app.use(express.static(publicFolder));
+app.use("/admin", express.static(path.join(__dirname, "admin")));
 
 
 // =====================================
@@ -62,7 +65,7 @@ async function connectDB() {
         console.log("=================================");
         console.log("✅ MySQL connected successfully!");
         console.log("📡 Host:", process.env.DB_HOST);
-        console.log("🔌 Port:", process.env.DB_PORT);
+        console.log("🔌 Port:", process.env.DB_PORT || 3306);
         console.log("🗄️ Database:", process.env.DB_NAME);
         console.log("=================================");
 
@@ -121,6 +124,10 @@ app.post("/api/responses", async (req, res) => {
         // ---------------------------------
 
         if (!db) {
+            await connectDB();
+        }
+
+        if (!db) {
 
             console.error("❌ Database is not connected");
 
@@ -145,7 +152,8 @@ app.post("/api/responses", async (req, res) => {
             latitude,
             longitude,
             answer1,
-            answer2
+            answer2,
+            answer3
         } = req.body;
 
 
@@ -156,10 +164,10 @@ app.post("/api/responses", async (req, res) => {
         const safeName = name || "";
         const safePhone = phone || "";
         const safeCity = city || "";
-        const safeRating = rating || null;
+        const safeRating = (rating !== undefined && rating !== null && rating !== "" && !isNaN(Number(rating))) ? Number(rating) : null;
         const safeMessage = message || "";
-        const safeLatitude = latitude || "";
-        const safeLongitude = longitude || "";
+        const safeLatitude = (latitude !== undefined && latitude !== null && latitude !== "" && !isNaN(Number(latitude))) ? Number(latitude) : null;
+        const safeLongitude = (longitude !== undefined && longitude !== null && longitude !== "" && !isNaN(Number(longitude))) ? Number(longitude) : null;
 
 
 
@@ -242,6 +250,13 @@ app.post("/api/responses", async (req, res) => {
         if (columnNames.includes("answer2")) {
             insertColumns.push("answer2");
             insertValues.push(answer2 || "");
+        }
+
+
+        // Answer 3
+        if (columnNames.includes("answer3")) {
+            insertColumns.push("answer3");
+            insertValues.push(answer3 || "");
         }
 
 
@@ -331,6 +346,10 @@ app.post("/api/responses", async (req, res) => {
 app.get("/api/responses", async (req, res) => {
 
     try {
+
+        if (!db) {
+            await connectDB();
+        }
 
         if (!db) {
 

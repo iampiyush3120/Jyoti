@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard ❤️ Responses</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-container">
+            <h1>💌 Love Experience Admin</h1>
+            <p>View all responses submitted to the database</p>
+            <div class="stats-bar">
+                <span class="badge">Total Responses: <strong id="totalCount">0</strong></span>
+                <button id="refreshBtn" onclick="loadResponses()">🔄 Refresh</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="loading" class="loading">Loading responses... ❤️</div>
+        <div id="error" class="error-msg" style="display: none;"></div>
+        <div id="responsesGrid" class="grid"></div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
