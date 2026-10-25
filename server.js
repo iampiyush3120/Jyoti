@@ -34,7 +34,7 @@ let db = null;
 async function connectDB() {
 if (db) return db;
 
-```
+
 let pool;
 
 try {
@@ -80,7 +80,7 @@ try {
     db = null;
     return null;
 }
-```
+
 
 }
 
@@ -88,13 +88,13 @@ try {
 app.get("/", (req, res) => {
 const indexPath = path.join(publicFolder, "index.html");
 
-```
+
 if (fs.existsSync(indexPath)) {
     return res.sendFile(indexPath);
 }
 
 return res.status(404).send("index.html not found");
-```
+
 
 });
 
