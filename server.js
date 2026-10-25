@@ -204,7 +204,6 @@ const database = await connectDB();
 
 });
 
-javascript
 // GET ALL RESPONSES
 app.get("/api/responses", async (req, res) => {
     try {
