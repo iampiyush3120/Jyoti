@@ -1,4 +1,4 @@
-
+```js
 const express = require("express");
 const mysql = require("mysql2/promise");
 const path = require("path");
@@ -50,28 +50,44 @@ async function connectDB() {
         return db;
     }
 
+    let pool;
+
     try {
-        const pool = mysql.createPool({
+        pool = mysql.createPool({
             host: process.env.DB_HOST,
             port: Number(process.env.DB_PORT || 3306),
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
+
+            // SSL required for Aiven MySQL
+            ssl: {
+                rejectUnauthorized: false
+            },
+
             waitForConnections: true,
             connectionLimit: 10,
-            queueLimit: 0
+            queueLimit: 0,
+            connectTimeout: 10000
         });
 
-        // Verify that the database is reachable.
+        // Test the database connection
         const connection = await pool.getConnection();
+        await connection.ping();
         connection.release();
 
         db = pool;
 
         console.log("MySQL connected successfully!");
+
         return db;
     } catch (error) {
         console.error("MySQL connection failed:", error.message);
+
+        if (pool) {
+            await pool.end().catch(() => {});
+        }
+
         db = null;
         return null;
     }
@@ -119,6 +135,7 @@ app.post("/api/responses", async (req, res) => {
             answer3
         } = req.body;
 
+        // Get existing table columns
         const [columns] = await database.execute(
             "SHOW COLUMNS FROM responses"
         );
@@ -126,9 +143,9 @@ app.post("/api/responses", async (req, res) => {
         const columnNames = columns.map(column => column.Field);
 
         const valuesByColumn = {
-            name: name || "",
-            phone: phone || "",
-            city: city || "",
+            name: name ?? "",
+            phone: phone ?? "",
+            city: city ?? "",
             rating:
                 rating !== undefined &&
                 rating !== null &&
@@ -136,7 +153,7 @@ app.post("/api/responses", async (req, res) => {
                 Number.isFinite(Number(rating))
                     ? Number(rating)
                     : null,
-            message: message || "",
+            message: message ?? "",
             latitude:
                 latitude !== undefined &&
                 latitude !== null &&
@@ -151,13 +168,14 @@ app.post("/api/responses", async (req, res) => {
                 Number.isFinite(Number(longitude))
                     ? Number(longitude)
                     : null,
-            answer1: answer1 || "",
-            answer2: answer2 || "",
-            answer3: answer3 || ""
+            answer1: answer1 ?? "",
+            answer2: answer2 ?? "",
+            answer3: answer3 ?? ""
         };
 
-        const insertColumns = Object.keys(valuesByColumn)
-            .filter(column => columnNames.includes(column));
+        const insertColumns = Object.keys(valuesByColumn).filter(
+            column => columnNames.includes(column)
+        );
 
         if (insertColumns.length === 0) {
             throw new Error(
@@ -172,7 +190,7 @@ app.post("/api/responses", async (req, res) => {
 
         const sql = `
             INSERT INTO responses
-            (${insertColumns.join(", ")})
+            (${insertColumns.map(column => `\`${column}\``).join(", ")})
             VALUES (${placeholders})
         `;
 
@@ -257,3 +275,4 @@ app.listen(PORT, "0.0.0.0", () => {
     console.log("Love Experience server started");
     console.log(`Server listening on port ${PORT}`);
 });
+```
